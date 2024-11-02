@@ -1,70 +1,171 @@
-name: "template"
-
+name: "aws-spa-s3-cloudfront"
 # Canonical GitHub repo
-github_repo: "cloudposse-terraform-components/template"
-
+github_repo: "cloudposse-terraform-components/aws-spa-s3-cloudfront"
 # Short description of this project
 description: |-
-  Description of this component
+  This component is responsible for provisioning:
 
-usage: |-
-  **Stack Level**: Regional or Test47
+  - S3 bucket
+  - CloudFront distribution for a Single Page Application
+  - ACM placed in us-east-1 regardless of the stack region (requirement of CloudFront)
 
-  Here's an example snippet for how to use this component.
-  
+  NOTE: The component does not use the ACM created by `dns-delegated`, because the ACM region has to be us-east-1.
+
+  ## Usage
+
+  **Stack Level**: Regional
+
+  Here are some example snippets for how to use this component:
+
+  An import for all instantiations of the `spa-s3-cloudfront` component can be created at `stacks/spa/spa-defaults.yaml`:
+
   ```yaml
   components:
     terraform:
-      foo:
+      spa-s3-cloudfront:
         vars:
-          enabled: true
+          # lookup GitHub Runner IAM role via remote state
+          github_runners_deployment_principal_arn_enabled: true
+          github_runners_component_name: github-runners
+          github_runners_tenant_name: core
+          github_runners_environment_name: ue2
+          github_runners_stage_name: auto
+          origin_force_destroy: false
+          origin_versioning_enabled: true
+          origin_block_public_acls: true
+          origin_block_public_policy: true
+          origin_ignore_public_acls: true
+          origin_restrict_public_buckets: true
+          origin_encryption_enabled: true
+          cloudfront_index_document: index.html
+          cloudfront_ipv6_enabled: false
+          cloudfront_compress: true
+          cloudfront_default_root_object: index.html
+          cloudfront_viewer_protocol_policy: redirect-to-https
   ```
 
+  An import for all instantiations for a specific SPA can be created at `stacks/spa/example-spa.yaml`:
+
+  ```yaml
+  components:
+    terraform:
+      example-spa:
+        component: spa-s3-cloudfront
+        vars:
+          name: example-spa
+          site_subdomain: example-spa
+          cloudfront_allowed_methods:
+            - GET
+            - HEAD
+          cloudfront_cached_methods:
+            - GET
+            - HEAD
+          cloudfront_custom_error_response:
+            - error_caching_min_ttl: 1
+              error_code: 403
+              response_code: 200
+              response_page_path: /index.html
+          cloudfront_default_ttl: 60
+          cloudfront_min_ttl: 60
+          cloudfront_max_ttl: 60
+  ```
+
+  Finally, the `spa-s3-cloudfront` component can be instantiated in a stack config:
+
+  ```yaml
+  import:
+    - spa/example-spa
+
+  components:
+    terraform:
+      example-spa:
+        component: spa-s3-cloudfront
+        settings:
+          spacelift:
+            workspace_enabled: true
+        vars: {}
+  ```
+
+  ### Failover Origins
+
+  Failover origins are supported via `var.failover_s3_origin_name` and `var.failover_s3_origin_region`.
+
+  ### Preview Environments
+
+  SPA Preview environments (i.e. `subdomain.example.com` mapping to a `/subdomain` path in the S3 bucket) powered by
+  Lambda@Edge are supported via `var.preview_environment_enabled`. See the both the variable description and inline
+  documentation for an extensive explanation for how these preview environments work.
+
+  ### Customizing Lambda@Edge
+
+  This component supports customizing Lambda@Edge functions for the CloudFront distribution. All Lambda@Edge function
+  configuration is deep merged before being passed to the `cloudposse/cloudfront-s3-cdn/aws//modules/lambda@edge` module.
+  You can add additional functions and overwrite existing functions as such:
+
+  ```yaml
+  import:
+    - catalog/spa-s3-cloudfront/defaults
+
+  components:
+    terraform:
+      refarch-docs-site-spa:
+        metadata:
+          component: spa-s3-cloudfront
+          inherits:
+            - spa-s3-cloudfront-defaults
+        vars:
+          enabled: true
+          lambda_edge_functions:
+            viewer_request: # overwrite existing function
+              source: null # this overwrites the 404 viewer request source with deep merging
+              source_zip: "./dist/lambda_edge_paywall_viewer_request.zip"
+              runtime: "nodejs16.x"
+              handler: "index.handler"
+              event_type: "viewer-request"
+              include_body: false
+            viewer_response: # new function
+              source_zip: "./dist/lambda_edge_paywall_viewer_response.zip"
+              runtime: "nodejs16.x"
+              handler: "index.handler"
+              event_type: "viewer-response"
+              include_body: false
+  ```
+
+  <!-- prettier-ignore-start -->
+
+  <!-- prettier-ignore-end -->
+
+  ## References
+
+  - [cloudposse/terraform-aws-components](https://github.com/cloudposse/terraform-aws-components/tree/master/modules/spa-s3-cloudfront) -
+    Cloud Posse's upstream component
+  - [How do I use CloudFront to serve a static website hosted on Amazon S3?](https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-serve-static-website/)
 include:
   - "docs/terraform.md"
-
 tags:
-  - terraform
-  - terraform-modules
-  - aws
-  - components
-  - terraform-components
-  - root
-  - geodesic
-  - reference-implementation
-  - reference-architecture
-
+  - component/spa-s3-cloudfront
+  - layer/addons
+  - provider/aws
 # Categories of this project
 categories:
-  - terraform-modules/root
-  - terraform-components
-
+  - component/spa-s3-cloudfront
+  - layer/addons
+  - provider/aws
 # License of this project
 license: "APACHE2"
-
 # Badges to display
 badges:
-  - name: "Latest Release"
-    image: "https://img.shields.io/github/release/cloudposse-terraform-components/template.svg?style=for-the-badge"
-    url: "https://github.com/cloudposse-terraform-components/template/releases/latest"
-  - name: "Slack Community"
-    image: "https://slack.cloudposse.com/for-the-badge.svg"
-    url: "https://slack.cloudposse.com"
-
-references:
-  - name: "Cloud Posse Documentation"
-    description: "Complete documentation for the Cloud Posse solution"
-    url: "https://docs.cloudposse.com"
-  - name: "Reference Architectures"
-    description: "Launch effortlessly with our turnkey reference architectures, built either by your team or ours."
-    url: "https://cloudposse.com/"
-
+  - name: Latest Release
+    image: https://img.shields.io/github/release/cloudposse-terraform-components/aws-spa-s3-cloudfront.svg?style=for-the-badge
+    url: https://github.com/cloudposse-terraform-components/aws-spa-s3-cloudfront/releases/latest
+  - name: Slack Community
+    image: https://slack.cloudposse.com/for-the-badge.svg
+    url: https://slack.cloudposse.com
 related:
-- name: "Cloud Posse Terraform Modules"
-  description: Our collection of reusable Terraform modules used by our reference architectures.
-  url: "https://docs.cloudposse.com/modules/"
-- name: "Atmos"
-  description: "Atmos is like docker-compose but for your infrastructure"
-  url: "https://atmos.tools"
-
+  - name: "Cloud Posse Terraform Modules"
+    description: Our collection of reusable Terraform modules used by our reference architectures.
+    url: "https://docs.cloudposse.com/modules/"
+  - name: "Atmos"
+    description: "Atmos is like docker-compose but for your infrastructure"
+    url: "https://atmos.tools"
 contributors: [] # If included generates contribs
