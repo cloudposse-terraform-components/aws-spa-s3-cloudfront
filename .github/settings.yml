@@ -2,6 +2,6 @@
 _extends: .github
 repository:
   name: aws-spa-s3-cloudfront
-  description: 'This component is responsible for provisioning:  - S3 bucket - CloudFront distribution for a Single Page Application - ACM placed in us-east-1 regardless of the stack region (requirement of CloudFront)  NOTE: The component does not use the ACM created by `dns-delegated`, because the ACM region has to be us-east-1'
+  description: 'This component is responsible for provisioning: S3 bucket,  CloudFront distribution for a Single Page Application, ACM placed in us-east-1 regardless of the stack region (requirement of CloudFront)'
   homepage: https://cloudposse.com/accelerate
   topics: terraform, terraform-component
