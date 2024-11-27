@@ -1,0 +1,7 @@
+# Upstream changes from _extends are only recognized when modifications are made to this file in the default branch.
+_extends: .github
+repository:
+  name: aws-spa-s3-cloudfront
+  description: 'This component is responsible for provisioning: S3 bucket,  CloudFront distribution for a Single Page Application, ACM placed in us-east-1 regardless of the stack region (requirement of CloudFront)'
+  homepage: https://cloudposse.com/accelerate
+  topics: terraform, terraform-component
