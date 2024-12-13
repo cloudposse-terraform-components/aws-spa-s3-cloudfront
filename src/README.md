@@ -5,7 +5,7 @@ tags:
   - provider/aws
 ---
 
-# Component: `spa`
+# Component: `spa-s3-cloudfront`
 
 This component is responsible for provisioning:
 
