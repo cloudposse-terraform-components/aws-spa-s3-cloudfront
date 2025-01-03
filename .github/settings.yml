@@ -5,4 +5,3 @@ repository:
   description: 'This component is responsible for provisioning: S3 bucket,  CloudFront distribution for a Single Page Application, ACM placed in us-east-1 regardless of the stack region (requirement of CloudFront)'
   homepage: https://cloudposse.com/accelerate
   topics: terraform, terraform-component
-
