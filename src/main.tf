@@ -77,7 +77,7 @@ module "acm_request_certificate" {
 
 module "spa_web" {
   source  = "cloudposse/cloudfront-s3-cdn/aws"
-  version = "0.95.0"
+  version = "0.97.0"
 
   block_origin_public_access_enabled = local.block_origin_public_access_enabled
   encryption_enabled                 = var.origin_encryption_enabled
