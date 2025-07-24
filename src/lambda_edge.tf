@@ -92,7 +92,7 @@ module "lambda_edge_functions" {
 
 module "lambda_edge" {
   source  = "cloudposse/cloudfront-s3-cdn/aws//modules/lambda@edge"
-  version = "0.98.0"
+  version = "0.98.1"
 
   functions         = jsondecode(local.enabled ? jsonencode(module.lambda_edge_functions[0].merged) : jsonencode({}))
   destruction_delay = var.lambda_edge_destruction_delay
