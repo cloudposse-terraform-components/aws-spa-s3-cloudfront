@@ -7,14 +7,13 @@ tags:
 
 # Component: `spa-s3-cloudfront`
 
-This component is responsible for provisioning:
+This component provisions infrastructure to serve a Single Page Application (SPA) via Amazon S3 and Amazon CloudFront.
 
-- S3 bucket
-- CloudFront distribution for a Single Page Application
-- ACM placed in us-east-1 regardless of the stack region (requirement of CloudFront)
+- S3 bucket to host SPA assets
+- CloudFront distribution for global CDN delivery
+- ACM certificate issued in `us-east-1` (required by CloudFront)
 
-NOTE: The component does not use the ACM created by `dns-delegated`, because the ACM region has to be us-east-1.
-
+NOTE: The component does not use the ACM created by `dns-delegated`, because the ACM region has to be `us-east-1`.
 ## Usage
 
 **Stack Level**: Regional
@@ -136,7 +135,10 @@ components:
 ```
 
 <!-- prettier-ignore-start -->
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- prettier-ignore-end -->
+
+
+<!-- markdownlint-disable -->
 ## Requirements
 
 | Name | Version |
@@ -284,13 +286,19 @@ components:
 | <a name="output_github_actions_iam_role_name"></a> [github\_actions\_iam\_role\_name](#output\_github\_actions\_iam\_role\_name) | Name of IAM role for GitHub Actions |
 | <a name="output_origin_s3_bucket_arn"></a> [origin\_s3\_bucket\_arn](#output\_origin\_s3\_bucket\_arn) | Origin bucket ARN. |
 | <a name="output_origin_s3_bucket_name"></a> [origin\_s3\_bucket\_name](#output\_origin\_s3\_bucket\_name) | Origin bucket name. |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-<!-- prettier-ignore-end -->
+<!-- markdownlint-restore -->
+
+
 
 ## References
 
-- [cloudposse/terraform-aws-components](https://github.com/cloudposse/terraform-aws-components/tree/master/modules/spa-s3-cloudfront) -
-  Cloud Posse's upstream component
-- [How do I use CloudFront to serve a static website hosted on Amazon S3?](https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-serve-static-website/)
+
+- [cloudposse/terraform-aws-components](https://github.com/cloudposse/terraform-aws-components/tree/master/modules/spa-s3-cloudfront) - Cloud Posse's upstream component
+
+- [How do I use CloudFront to serve a static website hosted on Amazon S3?](https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-serve-static-website/) - 
+
+
+
 
 [<img src="https://cloudposse.com/logo-300x69.svg" height="32" align="right"/>](https://cpco.io/homepage?utm_source=github&utm_medium=readme&utm_campaign=cloudposse-terraform-components/aws-spa-s3-cloudfront&utm_content=)
+
