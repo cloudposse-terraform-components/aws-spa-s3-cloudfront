@@ -134,8 +134,8 @@ usage: |-
   <!-- prettier-ignore-end -->
 
 references:
-  - name: cloudposse/terraform-aws-components
-    url: https://github.com/cloudposse/terraform-aws-components/tree/master/modules/spa-s3-cloudfront
+  - name: cloudposse-terraform-components
+    url: https://github.com/orgs/cloudposse-terraform-components/repositories
     description: Cloud Posse's upstream component
   - name: How do I use CloudFront to serve a static website hosted on Amazon S3?
     url: https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-serve-static-website/
