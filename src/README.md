@@ -163,9 +163,9 @@ components:
 | <a name="module_gha_role_name"></a> [gha\_role\_name](#module\_gha\_role\_name) | cloudposse/label/null | 0.25.0 |
 | <a name="module_github_runners"></a> [github\_runners](#module\_github\_runners) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
 | <a name="module_iam_roles"></a> [iam\_roles](#module\_iam\_roles) | ../account-map/modules/iam-roles | n/a |
-| <a name="module_lambda_edge"></a> [lambda\_edge](#module\_lambda\_edge) | cloudposse/cloudfront-s3-cdn/aws//modules/lambda@edge | 1.0.0 |
+| <a name="module_lambda_edge"></a> [lambda\_edge](#module\_lambda\_edge) | cloudposse/cloudfront-s3-cdn/aws//modules/lambda@edge | 1.0.1 |
 | <a name="module_lambda_edge_functions"></a> [lambda\_edge\_functions](#module\_lambda\_edge\_functions) | cloudposse/config/yaml//modules/deepmerge | 1.0.2 |
-| <a name="module_spa_web"></a> [spa\_web](#module\_spa\_web) | cloudposse/cloudfront-s3-cdn/aws | 1.0.0 |
+| <a name="module_spa_web"></a> [spa\_web](#module\_spa\_web) | cloudposse/cloudfront-s3-cdn/aws | 1.0.1 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 | <a name="module_utils"></a> [utils](#module\_utils) | cloudposse/utils/aws | 1.4.0 |
 | <a name="module_waf"></a> [waf](#module\_waf) | cloudposse/stack-config/yaml//modules/remote-state | 1.8.0 |
