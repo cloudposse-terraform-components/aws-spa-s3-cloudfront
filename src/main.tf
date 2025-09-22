@@ -82,7 +82,6 @@ module "spa_web" {
   block_origin_public_access_enabled = local.block_origin_public_access_enabled
   encryption_enabled                 = var.origin_encryption_enabled
   origin_force_destroy               = var.origin_force_destroy
-  versioning_enabled                 = var.origin_versioning_enabled
   web_acl_id                         = local.aws_waf_enabled ? module.waf.outputs.acl.arn : null
 
   cloudfront_access_log_create_bucket = var.cloudfront_access_log_create_bucket
