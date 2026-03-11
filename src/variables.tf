@@ -129,12 +129,6 @@ variable "origin_force_destroy" {
   description = "A boolean string that indicates all objects should be deleted from the origin Bucket so that the Bucket can be destroyed without error. These objects are not recoverable."
 }
 
-variable "origin_versioning_enabled" {
-  type        = bool
-  default     = false
-  description = "Enable or disable versioning for the origin Bucket. Versioning is a means of keeping multiple variants of an object in the same bucket."
-}
-
 variable "origin_deployment_principal_arns" {
   type        = list(string)
   description = "List of role ARNs to grant deployment permissions to the origin Bucket."
