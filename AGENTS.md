@@ -31,5 +31,5 @@
 - CI: ensure pre-commit, TFLint, and tests pass. Avoid unrelated changes in the same PR.
 
 ## Security & Configuration Tips
-- Never commit secrets. Configure AWS credentials/role assumption externally; the provider setup in `src/providers.tf` supports role assumption via the `iam_roles` module.
+- Never commit secrets. Configure AWS credentials/role assumption externally; the providers use ambient credentials supplied by the execution environment.
 - Global quotas must be applied in `us-east-1`; place in the `gbl` stack and set `region: us-east-1` in `vars`.
