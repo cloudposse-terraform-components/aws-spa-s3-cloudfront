@@ -11,6 +11,8 @@ description: |-
 
   NOTE: The component does not use the ACM created by `dns-delegated`, because the ACM region has to be `us-east-1`.
 
+  Configure AWS credentials and role assumption in the runner or surrounding execution environment. The component providers use ambient credentials.
+
 usage: |-
   **Stack Level**: Regional
 
