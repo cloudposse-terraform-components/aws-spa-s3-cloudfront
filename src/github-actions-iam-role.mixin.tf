@@ -58,7 +58,7 @@ module "github_oidc_provider" {
   count = local.github_actions_iam_role_enabled ? 1 : 0
 
   source  = "cloudposse/stack-config/yaml//modules/remote-state"
-  version = "2.0.0"
+  version = "1.8.0"
 
   component     = "github-oidc-provider"
   environment   = "gbl"
