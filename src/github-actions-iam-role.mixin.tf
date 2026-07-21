@@ -1,7 +1,6 @@
 # This mixin requires that a local variable named `github_actions_iam_policy` be defined
 # and its value to be a JSON IAM Policy Document defining the permissions for the role.
-# It also requires that the `github-oidc-provider` has been previously installed and the
-# `github-assume-role-policy.mixin.tf` has been added to `account-map/modules/team-assume-role-policy`.
+# It also requires that the `github-oidc-provider` has been previously installed.
 
 variable "github_actions_iam_role_enabled" {
   type        = bool
@@ -30,6 +29,19 @@ variable "github_actions_iam_role_attributes" {
 
 locals {
   github_actions_iam_role_enabled = local.enabled && var.github_actions_iam_role_enabled && length(var.github_actions_allowed_repos) > 0
+  trusted_github_repos_regexp     = "^(?:(?P<org>[^://]*)\\/)?(?P<repo>[^://]*):?(?P<constraint>.*)?$"
+  trusted_github_repos_sub = [
+    for repo in var.github_actions_allowed_repos : regex(local.trusted_github_repos_regexp, repo)
+  ]
+  github_repos_sub = [
+    for repo in local.trusted_github_repos_sub : (
+      repo["constraint"] == "" ?
+      format("repo:%s/%s:*", coalesce(repo["org"], "cloudposse"), repo["repo"]) :
+      startswith(repo["constraint"], "ref:") || startswith(repo["constraint"], "environment:") ?
+      format("repo:%s/%s:%s", coalesce(repo["org"], "cloudposse"), repo["repo"], repo["constraint"]) :
+      format("repo:%s/%s:ref:refs/heads/%s", coalesce(repo["org"], "cloudposse"), repo["repo"], repo["constraint"])
+    )
+  ]
 }
 
 module "gha_role_name" {
@@ -42,18 +54,58 @@ module "gha_role_name" {
   context = module.this.context
 }
 
-module "gha_assume_role" {
-  source = "../account-map/modules/team-assume-role-policy"
+module "github_oidc_provider" {
+  count = local.github_actions_iam_role_enabled ? 1 : 0
 
-  trusted_github_repos = var.github_actions_allowed_repos
+  source  = "cloudposse/stack-config/yaml//modules/remote-state"
+  version = "2.0.0"
+
+  component     = "github-oidc-provider"
+  environment   = "gbl"
+  privileged    = false
+  ignore_errors = true
+
+  defaults = {
+    oidc_provider_arn = ""
+  }
 
   context = module.gha_role_name.context
+}
+
+data "aws_iam_policy_document" "github_actions_assume_role" {
+  count = local.github_actions_iam_role_enabled ? 1 : 0
+
+  statement {
+    sid = "OidcProviderAssume"
+    actions = [
+      "sts:AssumeRoleWithWebIdentity",
+      "sts:SetSourceIdentity",
+      "sts:TagSession",
+    ]
+
+    principals {
+      type        = "Federated"
+      identifiers = [one(module.github_oidc_provider[*].outputs.oidc_provider_arn)]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = local.github_repos_sub
+    }
+  }
 }
 
 resource "aws_iam_role" "github_actions" {
   count              = local.github_actions_iam_role_enabled ? 1 : 0
   name               = module.gha_role_name.id
-  assume_role_policy = module.gha_assume_role.github_assume_role_policy
+  assume_role_policy = one(data.aws_iam_policy_document.github_actions_assume_role[*].json)
 
   inline_policy {
     name   = module.gha_role_name.id
