@@ -61,7 +61,7 @@ locals {
 # Create an ACM and explicitly set it to us-east-1 (requirement of CloudFront)
 module "acm_request_certificate" {
   source  = "cloudposse/acm-request-certificate/aws"
-  version = "0.18.0"
+  version = "0.18.1"
   providers = {
     aws = aws.us-east-1
   }
